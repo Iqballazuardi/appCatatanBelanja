@@ -1,114 +1,57 @@
 import { useState } from "react";
+import Header from "./components/Header";
+import Form from "./components/Form";
+import GroceryList from "./components/GroceryList";
+import Footer from "./components/Footer";
 
-const groceryItems = [
-  {
-    id: 1,
-    name: "Kopi Bubuk",
-    quantity: 2,
-    checked: true,
-  },
-  {
-    id: 2,
-    name: "Gula Pasir",
-    quantity: 5,
-    checked: false,
-  },
-  {
-    id: 3,
-    name: "Air Mineral",
-    quantity: 3,
-    checked: false,
-  },
-  {
-    id: 4,
-    name: "Beng Beng",
-    quantity: 10,
-    checked: true,
-  },
-];
+// const groceryItems = [
+//   {
+//     id: 1,
+//     name: "Kopi Bubuk",
+//     quantity: 2,
+//     checked: true,
+//   },
+//   {
+//     id: 2,
+//     name: "Gula Pasir",
+//     quantity: 5,
+//     checked: false,
+//   },
+//   {
+//     id: 3,
+//     name: "Air Mineral",
+//     quantity: 3,
+//     checked: false,
+//   },
+//   {
+//     id: 4,
+//     name: "Beng Beng",
+//     quantity: 10,
+//     checked: true,
+//   },
+// ];
 
 export default function App() {
+  const [items, setItems] = useState([]);
+  function handleAddItem(item) {
+    setItems([...items, item]);
+  }
+  function handleRemoveItem(id) {
+    const updatedItems = items.filter((item) => item.id !== id);
+    setItems(updatedItems);
+  }
+  function handleToggleItem(id) {
+    setItems(items.map((item) => (item.id === id ? { ...item, checked: !item.checked } : item)));
+  }
+  function handleClearItems() {
+    setItems([]);
+  }
   return (
     <div className="app">
       <Header />
-      <Form />
-      <GroceryList />
-      <Footer />
+      <Form onAddItems={handleAddItem} />
+      <GroceryList items={items} onRemoveItem={handleRemoveItem} onToggleItem={handleToggleItem} onClearItems={handleClearItems} />
+      <Footer items={items} />
     </div>
   );
-}
-
-function Header() {
-  return <h1>Catatan Belanjaku 📝</h1>;
-}
-
-function Form() {
-  const [name, setName] = useState("");
-  const [quantity, setQuantity] = useState(1);
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (!name) return;
-
-    const newItem = { name, quantity, checke: false, id: Date.now() };
-    console.log(newItem);
-
-    setName("");
-    setQuantity(1);
-  }
-
-  const quantityNum = [...Array(20)].map((_, i) => (
-    <option key={i + 1} value={i + 1}>
-      {i + 1}
-    </option>
-  ));
-
-  return (
-    <form className="add-form" onSubmit={handleSubmit}>
-      <h3>Hari ini belanja apa kita?</h3>
-      <div>
-        <select value={quantity} onChange={(e) => setQuantity(Number(e.target.value))}>
-          {quantityNum}
-        </select>
-        <input type="text" placeholder="nama barang..." value={name} onChange={(e) => setName(e.target.value)} />
-      </div>
-      <button>Tambah</button>
-    </form>
-  );
-}
-function GroceryList() {
-  return (
-    <>
-      <div className="list">
-        <ul>
-          {groceryItems.map((item) => (
-            <Item item={item} key={item.id} />
-          ))}
-        </ul>
-      </div>
-      <div className="actions">
-        <select>
-          <option value="input">Urutkan berdasarkan urutan input</option>
-          <option value="name">Urutkan berdasarkan nama barang</option>
-          <option value="checked">Urutkan berdasarkan ceklis</option>
-        </select>
-        <button>Bersihkan Daftar</button>
-      </div>
-    </>
-  );
-}
-
-function Item({ item }) {
-  return (
-    <li key={item.id}>
-      <input type="checkbox" />
-      <span style={item.checked ? { textDecoration: "line-through" } : {}}>
-        {item.quantity} {item.name}
-      </span>
-      <button>&times;</button>
-    </li>
-  );
-}
-function Footer() {
-  return <footer className="stats">Ada 10 barang di daftar belanjaan, 5 barang sudah dibeli (50%)</footer>;
 }
